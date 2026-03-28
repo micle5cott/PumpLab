@@ -25,11 +25,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 // --- DATABASE SETUP (MONGODB) ---
-// This tells the server to use the Render secret if it exists, otherwise fallback to local for testing
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/memevault';
-
-mongoose.connect(MONGO_URI)
-  .then(() => console.log('🟢 MongoDB Connected to Atlas'))
+mongoose.connect('mongodb://127.0.0.1:27017/memevault')
+  .then(() => console.log('🟢 MongoDB Connected'))
   .catch(err => console.error('🔴 MongoDB Connection Error:', err));
 
 const TokenSchema = new mongoose.Schema({
@@ -74,7 +71,8 @@ app.post('/api/save-token', async (req, res) => {
 
 app.get('/api/tokens', async (req, res) => {
   try {
-    const tokens = await Token.find().sort({ createdAt: -1 }).limit(10);
+    // FIX: Changed "Token.find" to "TokenModel.find"
+    const tokens = await TokenModel.find().sort({ createdAt: -1 }).limit(10);
     res.json(tokens);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch tokens' });
@@ -223,5 +221,9 @@ app.get('/api/tweets', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch tweets.' });
   }
 });
+
+// --- BACKGROUND WORKERS ---
+const { startXBot } = require('./x-bot');
+startXBot();
 
 app.listen(PORT, () => console.log(`🚀 MemeVault Backend running on http://localhost:${PORT}`));
