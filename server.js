@@ -257,11 +257,11 @@ app.post('/api/generate-reply', async (req, res) => {
 
     const result = await model.generateContent(prompt);
     const reply = result.response.text().toLowerCase(); // Ensure lowercase
-    res.json({ reply });
-  } catch (error) {
-    console.error("AI Error:", error);
-    res.status(500).json({ error: "Brain fog... could not generate reply." });
-  }
+    res.json({ reply: generatedReplyText }); 
+    } catch (error) {
+        console.error("AI Error:", error);
+        res.status(500).json({ error: "Brain fog..." });
+    } 
 });
 
 app.listen(PORT, () => console.log(`🚀 MemeVault Backend running on http://localhost:${PORT}`));
