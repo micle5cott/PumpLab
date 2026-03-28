@@ -25,8 +25,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 // --- DATABASE SETUP (MONGODB) ---
-mongoose.connect('mongodb://127.0.0.1:27017/memevault')
-  .then(() => console.log('🟢 MongoDB Connected'))
+// This tells the server to use the Render secret if it exists, otherwise fallback to local for testing
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/memevault';
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log('🟢 MongoDB Connected to Atlas'))
   .catch(err => console.error('🔴 MongoDB Connection Error:', err));
 
 const TokenSchema = new mongoose.Schema({
